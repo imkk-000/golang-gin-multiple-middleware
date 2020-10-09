@@ -31,24 +31,21 @@ func authenticateMiddleware(c *gin.Context) {
 func main() {
 	r := gin.Default()
 	r.Use(authenticateMiddleware)
-	loginRouter := r.Group("/")
-	createLoginRoutes(loginRouter)
-	projectRouter := r.Group("/")
-	createProjectRoutes(projectRouter)
+	createLoginRoutes(r)
+	createProjectRoutes(r)
 	log.Fatal(r.Run(":8080"))
 }
 
-func createLoginRoutes(r *gin.RouterGroup) {
+func createLoginRoutes(r *gin.Engine) {
 	r.
-		Use(authorizedLoginMiddleware)
-	{
-		r.GET("/login", loginEndpoint)
-	}
+		Group("/").
+		Use(authorizedLoginMiddleware).
+		GET("/login", loginEndpoint)
 }
 
-func createProjectRoutes(r *gin.RouterGroup) {
-	r.Use(authorizedProjectMiddleware)
-	{
-		r.GET("/project", projectEndpoint)
-	}
+func createProjectRoutes(r *gin.Engine) {
+	r.
+		Group("/").
+		Use(authorizedProjectMiddleware).
+		GET("/project", projectEndpoint)
 }
